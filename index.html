@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Drywall - Forro e Parede</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      padding: 25px 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      margin-bottom: 30px;
+      font-size: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #ddd;
+    }
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.3s;
+    }
+    .tab.active {
+      background: #27ae60;
+      color: white;
+      border-bottom: 3px solid #27ae60;
+    }
+
+    .input-group {
+      margin-bottom: 22px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #34495e;
+    }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #3498db;
+      border-radius: 10px;
+      font-size: 17px;
+    }
+    input:focus {
+      border-color: #2980b9;
+      box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.15);
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover { background: #219653; }
+
+    .btn-novo {
+      background: #3498db;
+      margin-top: 15px;
+    }
+    .btn-novo:hover { background: #2980b9; }
+
+    .resultado {
+      margin-top: 30px;
+      padding: 22px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      display: none;
+      border: 1px solid #e0e0e0;
+    }
+    .resultado h2 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .area {
+      font-size: 19.5px;
+      text-align: center;
+      margin: 20px 0;
+      color: #2980b9;
+      font-weight: bold;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #ddd;
+      font-size: 16px;
+    }
+    .item:last-child { border-bottom: none; }
+    .item span:first-child {
+      color: #2c3e50;
+      font-weight: 500;
+    }
+    .item span:last-child {
+      font-weight: 700;
+      color: #27ae60;
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 24px; }
+      .subtitle { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔨 Calculadora de Drywall</h1>
+    <p class="subtitle">Forro e Parede — Fórmulas profissionais</p>
+
+    <!-- Abas -->
+    <div class="tabs">
+      <div class="tab active" id="tab-forro" onclick="mudarAba('forro')">Forro</div>
+      <div class="tab" id="tab-parede" onclick="mudarAba('parede')">Parede</div>
+    </div>
+
+    <!-- Calculadora de Forro -->
+    <div id="conteudo-forro">
+      <div class="input-group">
+        <label for="f-comprimento">Comprimento do Forro (metros)</label>
+        <input type="number" id="f-comprimento" step="0.01" min="0" placeholder="Ex: 5.20">
+      </div>
+      <div class="input-group">
+        <label for="f-largura">Largura do Forro (metros)</label>
+        <input type="number" id="f-largura" step="0.01" min="0" placeholder="Ex: 4.00">
+      </div>
+      <button onclick="calcularForro()">Calcular Forro</button>
+    </div>
+
+    <!-- Calculadora de Parede -->
+    <div id="conteudo-parede" style="display: none;">
+      <div class="input-group">
+        <label for="p-comprimento">Comprimento da Parede (metros)</label>
+        <input type="number" id="p-comprimento" step="0.01" min="0" placeholder="Ex: 6.00">
+      </div>
+      <div class="input-group">
+        <label for="p-altura">Altura da Parede (metros) <strong>— Máximo 3,00m</strong></label>
+        <input type="number" id="p-altura" step="0.01" min="0" max="3" placeholder="Ex: 2.80">
+      </div>
+      <button onclick="calcularParede()">Calcular Parede</button>
+    </div>
+
+    <!-- Resultado -->
+    <div id="resultado" class="resultado">
+      <h2 id="titulo-resultado">📊 Resultado do Cálculo</h2>
+      <div class="area" id="area"></div>
+      
+      <div id="lista-itens"></div>
+
+      <button class="btn-novo" onclick="novoCalculo()">Novo Cálculo</button>
+    </div>
+  </div>
+
+  <script>
+    let tipoAtual = 'forro';
+
+    function mudarAba(tipo) {
+      tipoAtual = tipo;
+      
+      document.getElementById('tab-forro').classList.toggle('active', tipo === 'forro');
+      document.getElementById('tab-parede').classList.toggle('active', tipo === 'parede');
+      
+      document.getElementById('conteudo-forro').style.display = tipo === 'forro' ? 'block' : 'none';
+      document.getElementById('conteudo-parede').style.display = tipo === 'parede' ? 'block' : 'none';
+      
+      // Esconde resultado ao trocar de aba
+      document.getElementById('resultado').style.display = 'none';
+    }
+
+    function calcularForro() {
+      const comprimento = parseFloat(document.getElementById('f-comprimento').value);
+      const largura = parseFloat(document.getElementById('f-largura').value);
+
+      if (!comprimento || !largura || comprimento <= 0 || largura <= 0) {
+        alert("Por favor, insira valores válidos para comprimento e largura.");
+        return;
+      }
+
+      const area = comprimento * largura;
+
+      let placas = Math.ceil(area / 2);
+      let tabica = Math.ceil((2 * comprimento + 2 * largura) / 3);
+      let prego = Math.ceil(tabica * 5);
+      let canaleta = Math.ceil((1.70 * area) / 3);
+      let tirante = Math.ceil(canaleta * 3);
+      let regulador = tirante;
+      let kit = tirante;
+      let gn25 = Math.ceil(area * 12);
+      let agulha = Math.ceil(area * 2);
+      let massa = (area * 0.35).toFixed(2);
+      let fita = (area * 1.5).toFixed(2);
+
+      mostrarResultado("Forro", area, [
+        {nome: "Placa ST 1,20 x 1,80", qtd: placas + " unid."},
+        {nome: "Tabica Branca 3m", qtd: tabica + " unid."},
+        {nome: "Prego de Aço 15x15mm", qtd: prego + " unid."},
+        {nome: "Canaleta F530 3m", qtd: canaleta + " unid."},
+        {nome: "Tirante de Sustentação", qtd: tirante + " unid."},
+        {nome: "Regulador de Sustentação", qtd: regulador + " unid."},
+        {nome: "Kit Bucha/Parafuso 6mm", qtd: kit + " unid."},
+        {nome: "Parafuso Drywall GN25", qtd: gn25 + " unid."},
+        {nome: "Parafuso Metal Agulha LA13", qtd: agulha + " unid."},
+        {nome: "Massa Para Drywall", qtd: massa + " kg"},
+        {nome: "Fita Telada 48mm", qtd: fita + " metros"}
+      ]);
+    }
+
+    function calcularParede() {
+      let comprimento = parseFloat(document.getElementById('p-comprimento').value);
+      let altura = parseFloat(document.getElementById('p-altura').value);
+
+      if (!comprimento || !altura || comprimento <= 0 || altura <= 0) {
+        alert("Por favor, insira valores válidos.");
+        return;
+      }
+      if (altura > 3) {
+        alert("A altura máxima permitida é 3,00 metros.");
+        return;
+      }
+
+      const area = comprimento * altura;
+
+      let placas    = Math.ceil(comprimento * altura);
+      let guias     = Math.ceil(altura * 2);
+      let montantes = Math.ceil((comprimento / 0.60) + 1);
+      let agulha    = Math.ceil(area * 2);
+      let gn25      = Math.ceil(area * 30);
+      let massa     = (area * 0.70).toFixed(2);
+      let fita      = (area * 3).toFixed(2);
+      let kit       = Math.ceil((guias * 5) + 10);
+
+      mostrarResultado("Parede", area, [
+        {nome: "Placa ST 1,20 x 1,80", qtd: placas + " unid."},
+        {nome: "Guia 48mm 3m", qtd: guias + " unid."},
+        {nome: "Montante 48mm 3m", qtd: montantes + " unid."},
+        {nome: "Parafuso Metal Agulha LA13", qtd: agulha + " unid."},
+        {nome: "Parafuso Drywall GN25", qtd: gn25 + " unid."},
+        {nome: "Massa Para Drywall", qtd: massa + " kg"},
+        {nome: "Fita Telada 48mm", qtd: fita + " metros"},
+        {nome: "Kit Bucha/Parafuso 6mm", qtd: kit + " unid."}
+      ]);
+    }
+
+    function mostrarResultado(tipo, area, itens) {
+      document.getElementById('titulo-resultado').innerHTML = 📊 Resultado - ${tipo};
+      document.getElementById('area').innerHTML = <strong>Área total:</strong> ${area.toFixed(2)} m²;
+
+      let html = '';
+      itens.forEach(item => {
+        html += `
+          <div class="item">
+            <span>${item.nome}</span>
+            <span>${item.qtd}</span>
+          </div>`;
+      });
+      document.getElementById('lista-itens').innerHTML = html;
+
+      document.getElementById('conteudo-forro').style.display = 'none';
+      document.getElementById('conteudo-parede').style.display = 'none';
+      document.getElementById('resultado').style.display = 'block';
+    }
+
+    function novoCalculo() {
+      document.getElementById('f-comprimento').value = '';
+      document.getElementById('f-largura').value = '';
+      document.getElementById('p-comprimento').value = '';
+      document.getElementById('p-altura').value = '';
+
+      document.getElementById('resultado').style.display = 'none';
+      document.getElementById('conteudo-' + tipoAtual).style.display = 'block';
+    }
+
+    // Inicia na aba Forro
+    mudarAba('forro');
+  </script>
+</body>
+</html>
